@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler-client
+  labels:
+    app: crawler-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crawler-client
+  template:
+    metadata:
+      labels:
+        app: crawler-client
+    spec:
+      containers:
+      - name: crawler-client
+        image: thushar13/crawler-client:latest
+        ports:
+        - containerPort: 8001
+        env:
+        - name: SERVER_HOST
+          value: "crawler-server"  # Connect to the server service
+        - name: SERVER_PORT
+          value: "8000"

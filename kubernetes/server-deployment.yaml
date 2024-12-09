@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler-server
+  labels:
+    app: crawler-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crawler-server
+  template:
+    metadata:
+      labels:
+        app: crawler-server
+    spec:
+      containers:
+      - name: crawler-server
+        image: thushar13/crawler-server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "128Mi" 
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 15
