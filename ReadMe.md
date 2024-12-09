@@ -26,6 +26,14 @@ This project is a web crawler application built using FastAPI and aiohttp. It al
 
 ## Installation
 
+### Prerequisites
+Ensure you have the following installed:
+- Python 3.11+
+- Docker
+- Kubernetes (Minikube or a Kubernetes cluster)
+
+### Steps
+
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
@@ -38,14 +46,26 @@ This project is a web crawler application built using FastAPI and aiohttp. It al
    ```
 
 3. **Run the application**:
-   - **Using Python**:
+   - **Start the server**:
      ```bash
      python Crawler/server.py
      ```
-   - **Using Docker**:
+   - **Start the client**:
      ```bash
-     docker build -t web-crawler .
-     docker run -p 8000:8000 web-crawler
+     python Crawler/client/client.py
+     ```
+     The client interface will be accessible at `http://localhost:8001`.
+
+4. **Run using Docker**:
+   - **Build and run the server**:
+     ```bash
+     docker build -t web-crawler-server -f /Dockerfile .
+     docker run -p 8000:8000 web-crawler-server
+     ```
+   - **Build and run the client**:
+     ```bash
+     docker build -t web-crawler-client -f client/Dockerfile .
+     docker run -p 8001:8001 web-crawler-client
      ```
 
 ## Usage
@@ -60,8 +80,50 @@ This project is a web crawler application built using FastAPI and aiohttp. It al
 3. **View results**:
    - The sitemap will be displayed in both tree view and JSON format.
 
+## Kubernetes Deployment
+
+This project can be deployed on a Kubernetes cluster. Deployment manifests are available in the `kubernetes/` directory.
+
+### Steps to Deploy on Kubernetes
+
+1. **Ensure Kubernetes is set up**:
+   - Use Minikube for local testing:
+     ```bash
+     minikube start --memory=4096 --cpus=2
+     ```
+   - Or connect to an existing Kubernetes cluster.
+
+2. **Apply Kubernetes manifests**:
+   ```bash
+   kubectl apply -f kubernetes/
+   ```
+
+3. **Verify Deployment**:
+   - Check the status of pods:
+     ```bash
+     kubectl get pods
+     ```
+   - Port-forward the client service to access the interface:
+     ```bash
+     kubectl port-forward service/crawler-client 8001:8001
+     ```
+     Open `http://localhost:8001` in your browser.
+
+4. **Access the Services**:
+   - The server is exposed internally within the cluster.
+   - The client communicates with the server via the internal Kubernetes service.
+
+### Health Checks
+
+The Kubernetes deployment includes readiness and liveness probes to monitor the health of the services. These are defined in the deployment manifests:
+
+- **Server**: `/healthz` endpoint at port `8000`.
+- **Client**: Probes to ensure the service is ready to accept connections.
+
 ## Configuration
 
 - **Crawler Settings**: Modify `Crawler/config.yaml` to adjust concurrency, timeout, and max links.
 - **Client Settings**: Modify `Crawler/client/client_config.yaml` to adjust server URL, host, and port.
 
+
+Let me know if you face any issues or have suggestions for improvement!
