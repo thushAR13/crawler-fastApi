@@ -1,0 +1,5 @@
+# config.yaml
+crawler:
+  max_concurrency: 10
+  timeout_seconds: 60
+  max_links: 500
